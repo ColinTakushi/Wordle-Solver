@@ -23,6 +23,10 @@ Before running the application, ensure you have the following installed:
   ```bash
   pip install PyQt6
   ```
+- **Requests**: Install it via pip with the following command:
+  ```bash
+  pip install requests
+  ```
 
 ### Installation
 
