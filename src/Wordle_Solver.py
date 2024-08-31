@@ -47,11 +47,15 @@ def filter(guess, guessVal):
     global firstGuess, resetTrigger, inPosList, guessList, notInList, guessString
     while guess != '-1':
         inWordList = []
-
         if resetTrigger:
             print(guess)
             print(guessVal)
 
+        #Create a list of possible words
+        
+        #Remove words that contain letters with value 0
+        
+        #Create a list of letters for not 
         for pos, char in enumerate(guessVal):
             if char == '2':
                 inPosList.append(pos)
@@ -82,7 +86,8 @@ def filter(guess, guessVal):
         if inWordList:
             for word in guessList[:]:
                 for pos, char in enumerate(notInPosList):
-                    if char != '0' and char not in word or char in word[pos] :
+                    if char != '0' and char not in word or char in word[pos]:
+                        guessList.remove(word)
                         break
             
         #removing words that contain incorrect letters
