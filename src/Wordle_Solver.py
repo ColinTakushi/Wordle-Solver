@@ -2,140 +2,198 @@
 #By Colin Takushi
 
 #Getting words from txt file and placing them into a list
+from PyQt6.QtCore import Qt
+from PyQt6.QtWidgets import (
+    QApplication,
+    QCheckBox,
+    QComboBox,
+    QDateEdit,
+    QDateTimeEdit,
+    QDial,
+    QDoubleSpinBox,
+    QFontComboBox,
+    QLabel,
+    QLCDNumber,
+    QLineEdit,
+    QMainWindow,
+    QProgressBar,
+    QPushButton,
+    QRadioButton,
+    QSlider,
+    QSpinBox,
+    QTimeEdit,
+    QVBoxLayout,
+    QWidget,
+    QListWidget
+)
+import sys
 import os
+
+
 print(os.getcwd())
 myFile = open('include/words.txt', 'r')
 data = myFile.read()
 wordList = data.replace('"','').split(',')
 
-#initializing lists
-inPosList = []
-guessList = []
-notInList = []
-guessString = ['0', '0', '0', '0', '0']
-#if on first guess initalized guessList to have all words in word list
-firstGuess = True
-resetTrigger = False
+class MainWindow(QMainWindow):
+    def __init__(self):
+        super().__init__()
+        #initializing lists
+        self.inPosList = []
+        self.guessList = []
+        self.notInList = []
+        self.guessString = ['0', '0', '0', '0', '0']
+        #if on first guess initalized guessList to have all words in word list
+        self.firstGuess = True
+        self.resetTrigger = False
 
-#grabs user input
-def guessInput(guessList):
-    
-    while True:
-        guess = input("Enter your guess:")
-        if guess == 'r':
-            break
-        elif len(guess) != 5 or not guess.isalpha():
-            print("Invalid Input.")
-        elif guess not in guessList and len(guessList) > 0 :
-            print("Guess Not in guess. Choose from the list given. ")
-        else:
-            break
-    while True:
+        self.setWindowTitle("Wordle Solver")
+
+        self.wordLabel = QLabel()
+        self.wordLabel.setText("Enter your guess then enter the value of the guessed letters:")
+        self.wordInput = QLineEdit()
+        self.wordInput.setPlaceholderText("Word Guess")
+
+        self.valueLabel = QLabel()
+        self.valueLabel.setText("0 = not in word, 1 = in word, 2 = in position:")
+        self.valueInput = QLineEdit()
+        self.valueInput.setPlaceholderText("Value of guess")
+        self.valueInput.returnPressed.connect(self.return_pressed)
+
+        self.listOfWords = QListWidget()        
+
+        layout = QVBoxLayout()
+        layout.addWidget(self.wordLabel)
+        layout.addWidget(self.wordInput)
+        layout.addWidget(self.valueLabel)
+        layout.addWidget(self.valueInput)
+        layout.addWidget(self.listOfWords)
+
+        container = QWidget()
+        container.setLayout(layout)
+        self.setCentralWidget(container)
+
+    def return_pressed(self):
+        print("Return pressed!")
+        print(self.wordInput.text())
+        print(self.valueInput.text())
+        self.guessInput(self.wordInput.text(), self.valueInput.text())
+
+
+    #grabs user input
+    def guessInput(self, guess, guessVal):
+        guessBool = False
+        valBool = False
         if guess == 'r':
             guessVal = []
-            break
-        guessVal = input("Enter value for each letter: ")
+        elif len(guess) != 5 or not guess.isalpha():
+            print("Invalid Input. testing")
+        elif guess not in self.guessList and len(self.guessList) > 0 :
+            print("Guess Not in guess. Choose from the list given. ")
+        else:
+            guessBool = True
+
         if len(guessVal) != 5 or not guessVal.isnumeric():
             print("Invalid Input.")
         else: 
-            break
+            valBool = True
+        
+        if guessBool and valBool:
+            self.filter(guess, guessVal)
+        else:
+            print("need correct input")
 
-    return guess, guessVal
-
-#removes unwanted words
-def filter(guess, guessVal):
-    global firstGuess, resetTrigger, inPosList, guessList, notInList, guessString
-    while guess != '-1':
+    #removes unwanted words
+    def filter(self, guess, guessVal):
         inWordList = []
-        if resetTrigger:
+        if self.resetTrigger:
             print(guess)
             print(guessVal)
-
-        #Create a list of possible words
-        
-        #Remove words that contain letters with value 0
-        
+       
         #Create a list of letters for not 
         for pos, char in enumerate(guessVal):
             if char == '2':
-                inPosList.append(pos)
+                self.inPosList.append(pos)
             elif char == '1':
                 inWordList.append(pos)
             elif char == '0':
-                notInList.append(guess[pos])
+                self.notInList.append(guess[pos])
 
-        for pos in inPosList:
-            guessString[pos] = guess[pos]
+        for pos in self.inPosList:
+            self.guessString[pos] = guess[pos]
 
         notInPosList = ['0', '0', '0', '0', '0']
         for pos in inWordList:
             notInPosList[pos] = guess[pos]
             
 
-        if firstGuess:
-            guessList = wordList
-            firstGuess = False
+        if self.firstGuess:
+            self.guessList = wordList
+            self.firstGuess = False
 
-        if resetTrigger:
+        if self.resetTrigger:
             print("reset trigger")
             print()
-            print(len(guessList))
+            print(len(self.guessList))
 
         #removing words that dont contain correct letters and words 
         #with wrong letter placements
         if inWordList:
-            for word in guessList[:]:
+            for word in self.guessList[:]:
                 for pos, char in enumerate(notInPosList):
                     if char != '0' and char not in word or char in word[pos]:
-                        guessList.remove(word)
+                        self.guessList.remove(word)
                         break
-            
+                            
         #removing words that contain incorrect letters
 
-        for word in guessList[:]:
-            for char in notInList:
+        for word in self.guessList[:]:
+            for char in self.notInList:
                 if char in word:
-                    if char in guessString:
-                        if char not in word[guessString.index(char)]:
+                    if char in self.guessString:
+                        if char not in word[self.guessString.index(char)]:
                             print(char)
-                            print(guessString.index(char))
-                            print(word[guessString.index(char)])
+                            print(self.guessString.index(char))
+                            print(word[self.guessString.index(char)])
                             print(word)
                             continue
                     else:
-                        guessList.remove(word)
+                        self.guessList.remove(word)
                     break
-
+                        
         #removing words that dont have correct positioned letters
-        for word in guessList[:]:
-            for pos, char in enumerate(guessString):
+        for word in self.guessList[:]:
+            for pos, char in enumerate(self.guessString):
                 if char == '0': continue
                 elif char not in word[pos]:
-                    guessList.remove(word)
+                    self.guessList.remove(word)
                     break
+        
+        self.listOfWords.clear()
+        self.listOfWords.addItems(self.guessList)
+        self.wordInput.setText("")
+        self.valueInput.setText("")
 
-        print(guessList)
-        guess, guessVal = guessInput(guessList)
+        # need to request for user input again
+        # print(self.guessList)
 
         #Reset function
         if guess == 'r':
             print("------------RESET-------------")
             firstGuess = True
-            resetTrigger = True
-            inPosList = []
-            guessList = []
-            notInList = []
-            inWordList = []
-            guessString = ['0', '0', '0', '0', '0']
-            guess, guessVal = guessInput(guessList)
+            self.resetTrigger = True
+            self.inPosList = []
+            self.guessList = []
+            self.notInList = []
+            self.inWordList = []
+            self.self.guessString = ['0', '0', '0', '0', '0']
+            guess, guessVal = self.guessInput(self.guessList)   
 
-def main():
-    print("Enter your guess then enter the value of the guessed letters:")
-    print("0 = not in word, 1 = in word, 2 = in position")
-    guess, guessVal = guessInput(guessList)
-    filter(guess, guessVal)
+app = QApplication(sys.argv)
+
+window = MainWindow()
+window.show()
+
+app.exec()
 
 
-# __name__
-if __name__ == "__main__":
-    main()
