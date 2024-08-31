@@ -21,13 +21,12 @@ def guessInput(guessList):
             print("Guess Not in guess. Choose from the list given. ")
         else:
             break
-
-
     while True:
-        guessVal = input("Enter value for each letter: ")
         if guess == 'r':
+            guessVal = []
             break
-        elif len(guessVal) != 5 or not guessVal.isnumeric():
+        guessVal = input("Enter value for each letter: ")
+        if len(guessVal) != 5 or not guessVal.isnumeric():
             print("Invalid Input.")
         else: 
             break
@@ -44,8 +43,6 @@ guessString = ['0', '0', '0', '0', '0']
 
 print("Enter your guess then enter the value of the guessed letters:")
 print("0 = not in word, 1 = in word, 2 = in position")
-
-
 
 #if on first guess initalized guessList to have all words in word list
 firstGuess = True
@@ -77,7 +74,7 @@ while guess != '-1':
 
     if firstGuess:
         guessList = wordList
-        girstGuess = False
+        firstGuess = False
 
     if resetTrigger:
         print("reset trigger")
@@ -106,10 +103,10 @@ while guess != '-1':
                         print(word)
                         print("did not remove--------------")
                         continue
-                    else:
-                        print("removing:", word)
-                        print("for char not being in word more than once:", char)
-                        guessList.remove(word)
+                    # else:
+                    #     print("removing:", word)
+                    #     print("for char not being in word more than once:", char)
+                    #     guessList.remove(word)
                 else:
                     print("removing", word)
                     print("for char not being in word:", char)
@@ -125,7 +122,6 @@ while guess != '-1':
                 guessList.remove(word)
                 break
 
-                
 
     print(guessList)
     guess, guessVal = guessInput(guessList)
@@ -141,7 +137,7 @@ while guess != '-1':
         notInList = []
         inWordList = []
         guessString = ['0', '0', '0', '0', '0']
-        guess, guessVal = guessInput()
+        guess, guessVal = guessInput(guessList)
         
 
 
