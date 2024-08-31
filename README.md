@@ -19,13 +19,15 @@ The Wordle Solver application helps users efficiently solve daily Wordle puzzles
 Before running the application, ensure you have the following installed:
 
 - **Python 3.x**: You can download it from [python.org](https://www.python.org/).
-- **PyQt6**: Install it via pip with the following command:
+- **PyQt6 and Requests**: Install it via pip with the following command:
   ```bash
-  pip install PyQt6
+  pip install PyQt6 requests
   ```
-- **Requests**: Install it via pip with the following command:
+
+**Only needed for executable creation**
+- **PyInstaller**: Install it via pip with the following command:
   ```bash
-  pip install requests
+  pip install pyinstaller
   ```
 
 ### Installation
