@@ -2,7 +2,9 @@
 #By Colin Takushi
 
 #Getting words from txt file and placing them into a list
-myFile = open('words.txt', 'r')
+import os
+print(os.getcwd())
+myFile = open('include/words.txt', 'r')
 data = myFile.read()
 wordList = data.replace('"','').split(',')
 
