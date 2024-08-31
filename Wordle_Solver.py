@@ -16,6 +16,7 @@ import sys
 import os
 
 
+print("Colin: ")
 print(os.getcwd())
 myFile = open('include/words.txt', 'r')
 data = myFile.read()
