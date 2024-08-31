@@ -1,2 +1,4 @@
 Wordle Solver.sln
 src/*.pyproj
+build/*
+*.spec
