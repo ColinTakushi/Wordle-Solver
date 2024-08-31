@@ -15,4 +15,4 @@ This program takes the user's guesses, narrows down the list of potential words 
 ## Authors
 
 Colin Takushi
-[email](takushicolin@gmail.com)
+takushicolin@gmail.com
