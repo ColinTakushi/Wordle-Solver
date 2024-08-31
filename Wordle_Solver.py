@@ -14,13 +14,7 @@ from PyQt6.QtWidgets import (
 )
 import sys
 import os
-
-
-print("Colin: ")
-print(os.getcwd())
-myFile = open('include/words.txt', 'r')
-data = myFile.read()
-wordList = data.replace('"','').split(',')
+import requests
 
 class MainWindow(QMainWindow):
     def __init__(self):
@@ -92,6 +86,7 @@ class MainWindow(QMainWindow):
 
     #removes unwanted words
     def filter(self, guess, guessVal):
+        global wordList
         inWordList = []
         if self.resetTrigger:
             print(guess)
@@ -176,7 +171,42 @@ class MainWindow(QMainWindow):
             self.self.guessString = ['0', '0', '0', '0', '0']
             guess, guessVal = self.guessInput(self.guessList)   
 
-app = QApplication(sys.argv)
-window = MainWindow()
-window.show()
-app.exec()
+
+# Get word list
+def get_words():
+    url = 'https://gist.githubusercontent.com/cfreshman/d97dbe7004522f7bc52ed2a6e22e2c04/raw/633058e11743065ad2822e1d2e6505682a01a9e6/wordle-nyt-words-14855.txt'
+
+    try:
+        response = requests.get(url)
+        if response.status_code == 200:
+            words = response.text
+            return words
+        else:
+            print('Error:', response.status_code)
+            return None
+    except requests.exceptions.RequestException as e:
+        print('Error:', e)
+        return None
+
+def main():
+    words = get_words()
+    global wordList
+    if words:
+        print("Found words from api")
+        wordList = list(words.split("\n"))
+    else:
+        print("No words found from api, using local list")
+        print(os.getcwd())
+        myFile = open('include/words.txt', 'r')
+        data = myFile.read()
+        wordList = data.replace('"','').split(',')    
+        f = open("test.txt", "w")
+        f.write(wordList)
+
+    app = QApplication(sys.argv)
+    window = MainWindow()
+    window.show()
+    app.exec()
+
+if __name__ == '__main__':
+    main()
