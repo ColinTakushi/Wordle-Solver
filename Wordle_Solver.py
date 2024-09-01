@@ -41,13 +41,17 @@ class MainWindow(QMainWindow):
         self.valueInput.setPlaceholderText("Value of guess")
         self.valueInput.returnPressed.connect(self.return_pressed)
 
-        self.listOfWords = QListWidget()        
+        self.warnLabelWord = QLabel()
+        self.warnLabelVal = QLabel()
+        self.listOfWords = QListWidget()
 
         layout = QVBoxLayout()
         layout.addWidget(self.wordLabel)
         layout.addWidget(self.wordInput)
         layout.addWidget(self.valueLabel)
         layout.addWidget(self.valueInput)
+        layout.addWidget(self.warnLabelWord)
+        layout.addWidget(self.warnLabelVal)
         layout.addWidget(self.listOfWords)
 
         container = QWidget()
@@ -56,34 +60,31 @@ class MainWindow(QMainWindow):
 
     # Go to input check
     def return_pressed(self):
-        print("Return pressed!")
-        print(self.wordInput.text())
-        print(self.valueInput.text())
-        self.guessInput(self.wordInput.text(), self.valueInput.text())
-
-
-    #Check input validity  
-    def guessInput(self, guess, guessVal):
         guessBool = False
         valBool = False
+        guess = self.wordInput.text()
+        guessVal = self.valueInput.text()
         if guess == 'r':
             guessVal = []
         elif len(guess) != 5 or not guess.isalpha():
-            print("Invalid Input. testing")
+            self.warnLabelWord.setText("Invalid word input.")
         elif guess not in self.guessList and len(self.guessList) > 0 :
-            print("Guess Not in guess. Choose from the list given. ")
+            self.warnLabelWord.setText("Guess Not in guess. Choose from the list given.")
         else:
             guessBool = True
 
         if len(guessVal) != 5 or not guessVal.isnumeric():
             print("Invalid Input.")
+            self.warnLabelVal.setText("Invalid input value input.")
         else: 
             valBool = True
         
         if guessBool and valBool:
             self.filter(guess, guessVal)
-        else:
-            print("need correct input")
+
+        self.wordInput.setText("")
+        self.valueInput.setText("")
+        self.wordInput.setFocus()
 
     #removes unwanted words from master list
     def filter(self, guess, guessVal):
@@ -155,9 +156,6 @@ class MainWindow(QMainWindow):
         
         self.listOfWords.clear()
         self.listOfWords.addItems(self.guessList)
-        self.wordInput.setText("")
-        self.valueInput.setText("")
-
         # need to request for user input again
         # print(self.guessList)
 
@@ -171,7 +169,7 @@ class MainWindow(QMainWindow):
             self.notInList = []
             self.inWordList = []
             self.self.guessString = ['0', '0', '0', '0', '0']
-            guess, guessVal = self.guessInput(self.guessList)   
+            # guess, guessVal = self.guessInput(self.guessList)   
 
 
 # Get word list
