@@ -54,6 +54,7 @@ class MainWindow(QMainWindow):
         container.setLayout(layout)
         self.setCentralWidget(container)
 
+    # Go to input check
     def return_pressed(self):
         print("Return pressed!")
         print(self.wordInput.text())
@@ -61,7 +62,7 @@ class MainWindow(QMainWindow):
         self.guessInput(self.wordInput.text(), self.valueInput.text())
 
 
-    #grabs user input
+    #Check input validity  
     def guessInput(self, guess, guessVal):
         guessBool = False
         valBool = False
@@ -84,7 +85,7 @@ class MainWindow(QMainWindow):
         else:
             print("need correct input")
 
-    #removes unwanted words
+    #removes unwanted words from master list
     def filter(self, guess, guessVal):
         global wordList
         inWordList = []
@@ -92,7 +93,7 @@ class MainWindow(QMainWindow):
             print(guess)
             print(guessVal)
        
-        #Create a list of letters for not 
+        #Create lists for letters in position, in the word, and not in the word
         for pos, char in enumerate(guessVal):
             if char == '2':
                 self.inPosList.append(pos)
@@ -101,14 +102,15 @@ class MainWindow(QMainWindow):
             elif char == '0':
                 self.notInList.append(guess[pos])
 
+        #Track the letters in position
         for pos in self.inPosList:
             self.guessString[pos] = guess[pos]
 
+        #Track the letters not in position
         notInPosList = ['0', '0', '0', '0', '0']
         for pos in inWordList:
             notInPosList[pos] = guess[pos]
             
-
         if self.firstGuess:
             self.guessList = wordList
             self.firstGuess = False
@@ -118,8 +120,9 @@ class MainWindow(QMainWindow):
             print()
             print(len(self.guessList))
 
-        #removing words that dont contain correct letters and words 
-        #with wrong letter placements
+        #removing words that don't contain the letters with value 1 
+        #and 
+        #removing words that have letters with value 1 in current position
         if inWordList:
             for word in self.guessList[:]:
                 for pos, char in enumerate(notInPosList):
@@ -127,8 +130,7 @@ class MainWindow(QMainWindow):
                         self.guessList.remove(word)
                         break
                             
-        #removing words that contain incorrect letters
-
+        #removing words that contain the letters with value 0
         for word in self.guessList[:]:
             for char in self.notInList:
                 if char in word:
@@ -142,8 +144,8 @@ class MainWindow(QMainWindow):
                     else:
                         self.guessList.remove(word)
                     break
-                        
-        #removing words that dont have correct positioned letters
+
+        #removing words that dont have correct positioned letters with value 2
         for word in self.guessList[:]:
             for pos, char in enumerate(self.guessString):
                 if char == '0': continue
@@ -175,7 +177,6 @@ class MainWindow(QMainWindow):
 # Get word list
 def get_words():
     url = 'https://gist.githubusercontent.com/cfreshman/d97dbe7004522f7bc52ed2a6e22e2c04/raw/633058e11743065ad2822e1d2e6505682a01a9e6/wordle-nyt-words-14855.txt'
-
     try:
         response = requests.get(url)
         if response.status_code == 200:
