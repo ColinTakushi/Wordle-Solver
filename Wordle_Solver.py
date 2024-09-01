@@ -1,7 +1,7 @@
-#Wordle Solver
-#By Colin Takushi
+# Wordle Solver
+# By Colin Takushi
 
-#Getting words from txt file and placing them into a list
+# Getting words from txt file and placing them into a list
 from PyQt6.QtCore import Qt
 from PyQt6.QtWidgets import (
     QApplication,
@@ -16,27 +16,30 @@ import sys
 import os
 import requests
 
+
 class MainWindow(QMainWindow):
     def __init__(self):
         super().__init__()
-        #initializing lists
+        # initializing lists
         self.inPosList = []
         self.guessList = []
         self.notInList = []
         self.guessString = ['0', '0', '0', '0', '0']
-        #if on first guess initalized guessList to have all words in word list
+        # if on first guess initalized guessList to have all words in word list
         self.firstGuess = True
         self.resetTrigger = False
 
         self.setWindowTitle("Wordle Solver")
 
         self.wordLabel = QLabel()
-        self.wordLabel.setText("Enter your guess then enter the value of the guessed letters:")
+        self.wordLabel.setText(
+            "Enter your guess then enter the value of the guessed letters:")
         self.wordInput = QLineEdit()
         self.wordInput.setPlaceholderText("Word Guess")
 
         self.valueLabel = QLabel()
-        self.valueLabel.setText("0 = not in word, 1 = in word, 2 = in position:")
+        self.valueLabel.setText(
+            "0 = not in word, 1 = in word, 2 = in position:")
         self.valueInput = QLineEdit()
         self.valueInput.setPlaceholderText("Value of guess")
         self.valueInput.returnPressed.connect(self.return_pressed)
@@ -68,17 +71,18 @@ class MainWindow(QMainWindow):
             guessVal = []
         elif len(guess) != 5 or not guess.isalpha():
             self.warnLabelWord.setText("Invalid word input.")
-        elif guess not in self.guessList and len(self.guessList) > 0 :
-            self.warnLabelWord.setText("Guess Not in guess. Choose from the list given.")
+        elif guess not in self.guessList and len(self.guessList) > 0:
+            self.warnLabelWord.setText(
+                "Guess Not in guess. Choose from the list given.")
         else:
             guessBool = True
 
         if len(guessVal) != 5 or not guessVal.isnumeric():
             print("Invalid Input.")
             self.warnLabelVal.setText("Invalid input value input.")
-        else: 
+        else:
             valBool = True
-        
+
         if guessBool and valBool:
             self.filter(guess, guessVal)
 
@@ -86,15 +90,15 @@ class MainWindow(QMainWindow):
         self.valueInput.setText("")
         self.wordInput.setFocus()
 
-    #removes unwanted words from master list
+    # removes unwanted words from master list
     def filter(self, guess, guessVal):
         global wordList
         inWordList = []
         if self.resetTrigger:
             print(guess)
             print(guessVal)
-       
-        #Create lists for letters in position, in the word, and not in the word
+
+        # Create lists for letters in position, in the word, and not in the word
         for pos, char in enumerate(guessVal):
             if char == '2':
                 self.inPosList.append(pos)
@@ -103,15 +107,15 @@ class MainWindow(QMainWindow):
             elif char == '0':
                 self.notInList.append(guess[pos])
 
-        #Track the letters in position
+        # Track the letters in position
         for pos in self.inPosList:
             self.guessString[pos] = guess[pos]
 
-        #Track the letters not in position
+        # Track the letters not in position
         notInPosList = ['0', '0', '0', '0', '0']
         for pos in inWordList:
             notInPosList[pos] = guess[pos]
-            
+
         if self.firstGuess:
             self.guessList = wordList
             self.firstGuess = False
@@ -121,17 +125,17 @@ class MainWindow(QMainWindow):
             print()
             print(len(self.guessList))
 
-        #removing words that don't contain the letters with value 1 
-        #and 
-        #removing words that have letters with value 1 in current position
+        # removing words that don't contain the letters with value 1
+        # and
+        # removing words that have letters with value 1 in current position
         if inWordList:
             for word in self.guessList[:]:
                 for pos, char in enumerate(notInPosList):
                     if char != '0' and char not in word or char in word[pos]:
                         self.guessList.remove(word)
                         break
-                            
-        #removing words that contain the letters with value 0
+
+        # removing words that contain the letters with value 0
         for word in self.guessList[:]:
             for char in self.notInList:
                 if char in word:
@@ -146,20 +150,21 @@ class MainWindow(QMainWindow):
                         self.guessList.remove(word)
                     break
 
-        #removing words that dont have correct positioned letters with value 2
+        # removing words that dont have correct positioned letters with value 2
         for word in self.guessList[:]:
             for pos, char in enumerate(self.guessString):
-                if char == '0': continue
+                if char == '0':
+                    continue
                 elif char not in word[pos]:
                     self.guessList.remove(word)
                     break
-        
+
         self.listOfWords.clear()
         self.listOfWords.addItems(self.guessList)
         # need to request for user input again
         # print(self.guessList)
 
-        #Reset function
+        # Reset function
         if guess == 'r':
             print("------------RESET-------------")
             firstGuess = True
@@ -169,7 +174,7 @@ class MainWindow(QMainWindow):
             self.notInList = []
             self.inWordList = []
             self.self.guessString = ['0', '0', '0', '0', '0']
-            # guess, guessVal = self.guessInput(self.guessList)   
+            # guess, guessVal = self.guessInput(self.guessList)
 
 
 # Get word list
@@ -187,6 +192,7 @@ def get_words():
         print('Error:', e)
         return None
 
+
 def main():
     words = get_words()
     global wordList
@@ -198,7 +204,7 @@ def main():
         print(os.getcwd())
         myFile = open('include/words.txt', 'r')
         data = myFile.read()
-        wordList = data.replace('"','').split(',')    
+        wordList = data.replace('"', '').split(',')
         f = open("test.txt", "w")
         f.write(wordList)
 
@@ -206,6 +212,7 @@ def main():
     window = MainWindow()
     window.show()
     app.exec()
+
 
 if __name__ == '__main__':
     main()
